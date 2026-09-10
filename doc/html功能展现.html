@@ -1,0 +1,893 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MarkWright · 功能演示</title>
+<style>
+  /* ============ 设计令牌（对齐 MarkWright 深空黑主题） ============ */
+  :root{
+    --bg-0:#0d1117; --bg-1:#161b22; --bg-2:#21262d; --bg-3:#30363d;
+    --fg-0:#e6edf3; --fg-1:#c9d1d9; --fg-2:#8b949e; --fg-3:#6e7681;
+    --border:#30363d; --border-soft:#21262d;
+    --accent:#58a6ff; --accent-soft:rgba(88,166,255,.16);
+    --success:#3fb950; --warning:#d29922; --danger:#f85149; --purple:#bc8cff;
+    --paper:#f4ecd8; --paper-fg:#3a2e1f;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;
+    --mono:"JetBrains Mono","SF Mono",Consolas,"Courier New",monospace;
+    --radius:8px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:var(--sans);
+    background:
+      radial-gradient(1100px 600px at 15% -10%, rgba(88,166,255,.10), transparent 60%),
+      radial-gradient(900px 500px at 100% 110%, rgba(188,140,255,.10), transparent 60%),
+      #05070a;
+    color:var(--fg-0);
+    display:flex; align-items:center; justify-content:center;
+    padding:22px;
+    overflow:hidden;
+  }
+
+  /* ============ 外壳 ============ */
+  .shell{
+    width:min(1180px,100%);
+    height:min(720px,100%);
+    background:var(--bg-0);
+    border:1px solid var(--border);
+    border-radius:12px;
+    box-shadow:0 30px 90px rgba(0,0,0,.75), 0 0 0 1px rgba(255,255,255,.03) inset;
+    display:flex; flex-direction:column;
+    overflow:hidden;
+  }
+
+  /* 标题栏 */
+  .titlebar{
+    height:38px; flex:0 0 38px;
+    display:flex; align-items:center; gap:10px;
+    padding:0 12px;
+    background:var(--bg-2);
+    border-bottom:1px solid var(--border);
+    user-select:none;
+  }
+  .lights{display:flex; gap:7px}
+  .lights i{width:11px;height:11px;border-radius:50%;display:block}
+  .lights i:nth-child(1){background:#ff5f57}
+  .lights i:nth-child(2){background:#febc2e}
+  .lights i:nth-child(3){background:#28c840}
+  .mark{
+    width:22px;height:22px;border-radius:6px;
+    background:linear-gradient(135deg,var(--accent),#1f6feb);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:11px;color:#fff;letter-spacing:-.5px;
+  }
+  .brand{font-size:13px;font-weight:600}
+  .tsep{width:1px;height:16px;background:var(--border)}
+  .docname{font-size:12px;color:var(--fg-2)}
+  .tb-right{margin-left:auto;display:flex;align-items:center;gap:6px}
+  .tb-btn{
+    font-size:12px;color:var(--fg-1);
+    padding:4px 9px;border-radius:5px;background:var(--bg-1);
+    border:1px solid var(--border-soft);
+    display:flex;align-items:center;gap:5px;
+  }
+  .tb-btn svg{width:12px;height:12px}
+
+  /* 主体：左导航 + 舞台 */
+  .body{flex:1;display:flex;min-height:0}
+
+  .rail{
+    width:196px;flex:0 0 196px;
+    background:var(--bg-1);
+    border-right:1px solid var(--border);
+    display:flex;flex-direction:column;
+    padding:10px 8px;gap:2px;
+    overflow:hidden;
+  }
+  .rail-h{
+    font-size:10px;letter-spacing:.8px;color:var(--fg-3);
+    text-transform:uppercase;font-weight:700;
+    padding:4px 8px 8px;
+  }
+  .nav-item{
+    display:flex;align-items:center;gap:8px;
+    padding:7px 9px;border-radius:6px;
+    font-size:12px;color:var(--fg-2);
+    border-left:2px solid transparent;
+    transition:background .18s,color .18s,border-color .18s;
+    white-space:nowrap;overflow:hidden;
+  }
+  .nav-item .num{
+    font-family:var(--mono);font-size:10px;color:var(--fg-3);
+    min-width:16px;
+  }
+  .nav-item.on{background:var(--accent-soft);color:var(--fg-0);border-left-color:var(--accent)}
+  .nav-item.on .num{color:var(--accent)}
+  .nav-item .dot{width:5px;height:5px;border-radius:50%;background:var(--fg-3);flex:0 0 5px}
+  .nav-item.on .dot{background:var(--accent);box-shadow:0 0 8px var(--accent)}
+
+  .stage{
+    flex:1;min-width:0;position:relative;
+    background:
+      radial-gradient(700px 380px at 80% -10%, rgba(88,166,255,.07), transparent 60%),
+      var(--bg-0);
+    overflow:hidden;
+  }
+
+  /* ============ 场景通用 ============ */
+  .scene{
+    position:absolute;inset:0;
+    opacity:0;visibility:hidden;
+    transition:opacity .5s ease;
+    padding:20px 22px;
+    display:flex;flex-direction:column;
+  }
+  .scene.on{opacity:1;visibility:visible}
+  .scene-title{
+    font-size:14px;font-weight:600;color:var(--fg-0);
+    display:flex;align-items:center;gap:8px;margin-bottom:4px;
+  }
+  .scene-title .badge{
+    font-size:10px;font-weight:600;color:var(--accent);
+    background:var(--accent-soft);padding:2px 7px;border-radius:20px;
+  }
+  .scene-sub{font-size:11.5px;color:var(--fg-2);margin-bottom:14px;line-height:1.6}
+  .fill{flex:1;min-height:0}
+
+  /* 通用面板 */
+  .panel{
+    background:var(--bg-1);border:1px solid var(--border);
+    border-radius:var(--radius);
+  }
+  .panel-h{
+    height:28px;display:flex;align-items:center;gap:6px;
+    padding:0 10px;font-size:11px;color:var(--fg-2);
+    border-bottom:1px solid var(--border-soft);
+  }
+  .kbd{
+    font-family:var(--mono);font-size:9.5px;color:var(--fg-2);
+    background:var(--bg-2);border:1px solid var(--border);
+    border-radius:3px;padding:1px 5px;
+  }
+
+  /* ============ 场景 1：双栏实时预览 ============ */
+  .split{display:flex;gap:0;flex:1;min-height:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+  .ed{flex:1;background:var(--bg-0);padding:12px 6px 12px 0;font-family:var(--mono);font-size:11.5px;line-height:1.85;overflow:hidden;position:relative}
+  .code-line{display:flex;padding:0 12px;white-space:pre;opacity:0}
+  .code-line .ln{width:26px;flex:0 0 26px;text-align:right;padding-right:12px;color:var(--fg-3);user-select:none}
+  .pv{flex:1;background:var(--bg-0);padding:14px 18px;border-left:1px solid var(--border);overflow:hidden}
+  .pv h1{font-size:17px;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border-soft);opacity:0}
+  .pv p{font-size:12px;color:var(--fg-1);line-height:1.8;margin-bottom:9px;opacity:0}
+  .pv .codeblk{
+    background:var(--bg-1);border:1px solid var(--border-soft);border-radius:6px;
+    padding:9px 11px;font-family:var(--mono);font-size:10.5px;line-height:1.7;
+    color:var(--fg-1);opacity:0;
+  }
+  .pv .li{font-size:12px;color:var(--fg-1);line-height:1.9;opacity:0;display:flex;gap:7px}
+  .pv .li b{color:var(--success);font-weight:400}
+  .caret{display:inline-block;width:7px;height:13px;background:var(--accent);vertical-align:-2px;margin-left:1px}
+  .c-key{color:#ff7b72}.c-str{color:#a5d6ff}.c-fn{color:#d2a8ff}.c-cm{color:var(--fg-3)}
+  .scene.on .code-line{animation:lineIn .35s ease forwards}
+  .scene.on .code-line:nth-child(1){animation-delay:.15s}
+  .scene.on .code-line:nth-child(2){animation-delay:.35s}
+  .scene.on .code-line:nth-child(3){animation-delay:.55s}
+  .scene.on .code-line:nth-child(4){animation-delay:.75s}
+  .scene.on .code-line:nth-child(5){animation-delay:.95s}
+  .scene.on .code-line:nth-child(6){animation-delay:1.15s}
+  .scene.on .code-line:nth-child(7){animation-delay:1.35s}
+  .scene.on .code-line:nth-child(8){animation-delay:1.55s}
+  .scene.on .pv h1{animation:fadeUp .5s ease 1.4s forwards}
+  .scene.on .pv p:nth-of-type(1){animation:fadeUp .5s ease 1.7s forwards}
+  .scene.on .pv .codeblk{animation:fadeUp .5s ease 2.0s forwards}
+  .scene.on .pv .li:nth-of-type(1){animation:fadeUp .5s ease 2.3s forwards}
+  .scene.on .pv .li:nth-of-type(2){animation:fadeUp .5s ease 2.5s forwards}
+  .scene.on .caret{animation:blink 1s steps(1) infinite}
+  @keyframes lineIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @keyframes blink{0%,50%{opacity:1}51%,100%{opacity:0}}
+
+  /* ============ 场景 2：斜杠菜单 ============ */
+  .slashwrap{flex:1;display:flex;gap:16px;min-height:0}
+  .slash-ed{flex:1.15;background:var(--bg-1);border:1px solid var(--border);border-radius:var(--radius);padding:14px;font-family:var(--mono);font-size:12px;line-height:2;position:relative}
+  .slash-menu{
+    position:absolute;left:16px;top:74px;width:262px;
+    background:var(--bg-2);border:1px solid var(--border);border-radius:7px;
+    box-shadow:0 14px 34px rgba(0,0,0,.6);padding:4px;z-index:3;
+    opacity:0;transform:translateY(-6px);
+  }
+  .scene.on .slash-menu{animation:popIn .3s ease .5s forwards}
+  @keyframes popIn{to{opacity:1;transform:none}}
+  .sm-item{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:4px;font-size:11px;color:var(--fg-1)}
+  .sm-item .sample{margin-left:auto;font-family:var(--mono);font-size:9.5px;color:var(--fg-3)}
+  .sm-item .tag{font-size:9px;color:var(--fg-3);background:var(--bg-1);border-radius:3px;padding:0 4px;font-family:var(--mono)}
+  .scene.on .sm-item{animation:hlCycle 3.6s steps(1) 1s infinite}
+  .scene.on .sm-item:nth-child(1){animation-delay:1s}
+  .scene.on .sm-item:nth-child(2){animation-delay:1.45s}
+  .scene.on .sm-item:nth-child(3){animation-delay:1.9s}
+  .scene.on .sm-item:nth-child(4){animation-delay:2.35s}
+  .scene.on .sm-item:nth-child(5){animation-delay:2.8s}
+  @keyframes hlCycle{
+    0%,100%{background:transparent;color:var(--fg-1)}
+    6%,18%{background:var(--accent-soft);color:var(--fg-0)}
+    24%{background:transparent;color:var(--fg-1)}
+  }
+  .inserted{
+    margin-top:14px;background:var(--bg-0);border:1px dashed var(--border);
+    border-radius:6px;padding:9px 11px;font-family:var(--mono);font-size:11.5px;
+    color:var(--success);opacity:0;
+  }
+  .scene.on .inserted{animation:fadeUp .5s ease 3.4s forwards}
+  .slash-side{flex:.85;display:flex;flex-direction:column;gap:10px}
+  .tip{background:var(--bg-1);border:1px solid var(--border);border-radius:var(--radius);padding:11px 12px}
+  .tip h4{font-size:11.5px;color:var(--fg-0);margin-bottom:5px;display:flex;align-items:center;gap:6px}
+  .tip h4 .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+  .tip p{font-size:11px;color:var(--fg-2);line-height:1.7}
+  .tip code{font-family:var(--mono);font-size:10.5px;background:var(--bg-2);border-radius:3px;padding:0 4px;color:var(--accent)}
+
+  /* ============ 场景 3：命令面板 ============ */
+  .palette-wrap{flex:1;display:flex;align-items:flex-start;justify-content:center;padding-top:6px}
+  .palette{
+    width:430px;background:var(--bg-1);border:1px solid var(--border);
+    border-radius:9px;box-shadow:0 20px 50px rgba(0,0,0,.6);overflow:hidden;
+    opacity:0;transform:translateY(-10px) scale(.98);
+  }
+  .scene.on .palette{animation:popIn .35s ease .3s forwards}
+  .pal-row{display:flex;align-items:center;gap:8px;padding:11px 13px;border-bottom:1px solid var(--border-soft)}
+  .pal-row svg{width:14px;height:14px;color:var(--fg-3)}
+  .pal-input{font-size:13px;color:var(--fg-0)}
+  .pal-input .typed{color:var(--fg-0)}
+  .pal-input .ph{color:var(--fg-3)}
+  .pal-caret{display:inline-block;width:1.5px;height:14px;background:var(--accent);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+  .pal-esc{margin-left:auto}
+  .pal-g{font-size:9.5px;letter-spacing:.7px;color:var(--fg-3);text-transform:uppercase;font-weight:700;padding:8px 13px 4px}
+  .pal-i{display:flex;align-items:center;gap:9px;padding:6px 13px;font-size:11.5px;color:var(--fg-2);border-left:2px solid transparent;opacity:0}
+  .pal-i .t{flex:1}
+  .scene.on .pal-i{animation:fadeUp .3s ease forwards}
+  .scene.on .pal-i:nth-of-type(1){animation-delay:.55s}
+  .scene.on .pal-i:nth-of-type(2){animation-delay:.65s}
+  .scene.on .pal-i:nth-of-type(3){animation-delay:.75s}
+  .scene.on .pal-i:nth-of-type(4){animation-delay:.85s}
+  .scene.on .pal-i:nth-of-type(5){animation-delay:.95s}
+  .scene.on .pal-i:nth-of-type(6){animation-delay:1.05s}
+  .scene.on .pal-i.hot{animation:hotCycle 3s steps(1) 1.3s infinite}
+  @keyframes hotCycle{
+    0%,100%{background:transparent;border-left-color:transparent;color:var(--fg-2)}
+    8%,30%{background:var(--accent-soft);border-left-color:var(--accent);color:var(--fg-0)}
+  }
+
+  /* ============ 场景 4：十二套主题 ============ */
+  .themes{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex:1;align-content:start}
+  .tcard{
+    background:var(--bg-1);border:1px solid var(--border);border-radius:7px;
+    padding:9px;position:relative;overflow:hidden;
+    opacity:0;transform:translateY(8px);
+  }
+  .scene.on .tcard{animation:fadeUp .4s ease forwards}
+  .scene.on .tcard:nth-child(1){animation-delay:.1s}
+  .scene.on .tcard:nth-child(2){animation-delay:.18s}
+  .scene.on .tcard:nth-child(3){animation-delay:.26s}
+  .scene.on .tcard:nth-child(4){animation-delay:.34s}
+  .scene.on .tcard:nth-child(5){animation-delay:.42s}
+  .scene.on .tcard:nth-child(6){animation-delay:.5s}
+  .scene.on .tcard:nth-child(7){animation-delay:.58s}
+  .scene.on .tcard:nth-child(8){animation-delay:.66s}
+  .scene.on .tcard:nth-child(9){animation-delay:.74s}
+  .scene.on .tcard:nth-child(10){animation-delay:.82s}
+  .scene.on .tcard:nth-child(11){animation-delay:.9s}
+  .scene.on .tcard:nth-child(12){animation-delay:.98s}
+  .tcard .nm{font-size:11px;color:var(--fg-0);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+  .tcard .nm em{font-style:normal;font-size:9px;color:var(--fg-3)}
+  .sw{display:flex;gap:4px}
+  .sw i{width:100%;height:16px;border-radius:3px;display:block}
+  .tcard .ring{
+    position:absolute;inset:0;border-radius:7px;
+    border:2px solid var(--accent);opacity:0;
+  }
+  .scene.on .tcard.cycle .ring{animation:ringCycle 4.8s ease-in-out infinite}
+  @keyframes ringCycle{0%,100%{opacity:0;transform:scale(.97)}10%,80%{opacity:1;transform:scale(1)}}
+
+  /* ============ 场景 5：专注模式 ============ */
+  .focus{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+  .ring-wrap{position:relative;width:210px;height:210px}
+  .ring-wrap svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .ring-bg{fill:none;stroke:var(--bg-3);stroke-width:5}
+  .ring-fg{
+    fill:none;stroke:var(--accent);stroke-width:5;stroke-linecap:round;
+    stroke-dasharray:339.29;stroke-dashoffset:0;
+  }
+  .scene.on .ring-fg{animation:drain 9s linear .5s infinite}
+  @keyframes drain{from{stroke-dashoffset:0}to{stroke-dashoffset:339.29}}
+  .ring-txt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+  .digits{font-family:var(--mono);font-size:40px;font-weight:200;letter-spacing:1px;color:var(--fg-0);font-variant-numeric:tabular-nums}
+  .phase{font-size:11px;color:var(--success);border:1px solid var(--success);border-radius:20px;padding:2px 10px;display:flex;align-items:center;gap:5px}
+  .phase i{width:6px;height:6px;border-radius:50%;background:var(--success);animation:pulse 1.6s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .focus-stats{display:flex;gap:12px;margin-top:22px}
+  .fs{background:var(--bg-1);border:1px solid var(--border);border-radius:7px;padding:10px 18px;text-align:center;min-width:130px}
+  .fs .n{font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+  .fs .n small{font-size:11px;color:var(--fg-3);font-weight:400}
+  .fs .l{font-size:10px;color:var(--fg-2);margin-top:3px}
+  .fs .b{height:4px;background:var(--bg-2);border-radius:2px;margin-top:7px;overflow:hidden}
+  .fs .b i{display:block;height:100%;background:var(--accent);width:0}
+  .scene.on .fs .b i{animation:grow 9s ease .5s infinite}
+  @keyframes grow{from{width:0}to{width:72%}}
+
+  /* ============ 场景 6：环境音 ============ */
+  .wn-wrap{flex:1;display:flex;gap:18px;align-items:center;justify-content:center}
+  .wave{display:flex;align-items:flex-end;gap:3px;height:120px;width:220px}
+  .wave i{flex:1;background:linear-gradient(180deg,var(--accent),rgba(88,166,255,.25));border-radius:2px;height:12%;transform-origin:bottom}
+  .scene.on .wave i{animation:wv 1.1s ease-in-out infinite}
+  .scene.on .wave i:nth-child(2n){animation-duration:.85s}
+  .scene.on .wave i:nth-child(3n){animation-duration:1.35s}
+  .scene.on .wave i:nth-child(5n){animation-duration:.7s}
+  @keyframes wv{0%,100%{height:12%}50%{height:88%}}
+  .wn-panel{width:250px;background:var(--bg-1);border:1px solid var(--border);border-radius:9px;padding:12px;box-shadow:0 16px 40px rgba(0,0,0,.5)}
+  .wn-h{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;margin-bottom:10px}
+  .wn-h svg{width:14px;height:14px;color:var(--accent)}
+  .wn-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:11px}
+  .wn-b{display:flex;align-items:center;gap:5px;padding:7px 9px;border-radius:5px;font-size:11px;background:var(--bg-2);color:var(--fg-1);border:1px solid transparent}
+  .wn-b svg{width:12px;height:12px}
+  .scene.on .wn-b{animation:bcycle 4.8s steps(1) 1s infinite}
+  .scene.on .wn-b:nth-child(1){animation-delay:1s}
+  .scene.on .wn-b:nth-child(2){animation-delay:1.8s}
+  .scene.on .wn-b:nth-child(3){animation-delay:2.6s}
+  .scene.on .wn-b:nth-child(4){animation-delay:3.4s}
+  @keyframes bcycle{
+    0%,100%{background:var(--bg-2);color:var(--fg-1);border-color:transparent}
+    5%,20%{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+    25%{background:var(--bg-2);color:var(--fg-1);border-color:transparent}
+  }
+  .wn-vol{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--fg-2)}
+  .wn-track{flex:1;height:4px;background:var(--bg-3);border-radius:2px;position:relative}
+  .wn-track i{position:absolute;inset:0;width:40%;background:var(--accent);border-radius:2px}
+  .wn-track::after{content:"";position:absolute;left:40%;top:50%;width:11px;height:11px;border-radius:50%;background:#fff;transform:translate(-50%,-50%)}
+  .note{font-size:10.5px;color:var(--fg-3);text-align:center;margin-top:12px}
+
+  /* ============ 场景 7：双向链接 ============ */
+  .links{display:grid;grid-template-columns:1.25fr 1fr;gap:14px;flex:1;min-height:0}
+  .doc{background:var(--bg-1);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px;font-size:12px;line-height:2;color:var(--fg-1);overflow:hidden}
+  .doc h3{font-size:13.5px;color:var(--fg-0);margin-bottom:8px}
+  .wl{color:var(--accent);border-bottom:1px dashed var(--accent);padding-bottom:1px}
+  .tg{color:var(--success);background:rgba(63,185,80,.12);border-radius:3px;padding:0 4px;font-size:11px}
+  .bl{background:var(--bg-1);border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px;margin-bottom:10px}
+  .bl h4{font-size:10px;letter-spacing:.7px;text-transform:uppercase;color:var(--fg-3);margin-bottom:8px;font-weight:700}
+  .bl-row{display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:11px;color:var(--fg-1);opacity:0}
+  .bl-row svg{width:12px;height:12px;color:var(--fg-3);margin-top:2px;flex:0 0 12px}
+  .bl-row .ctx{color:var(--fg-3);font-size:10px;display:block;margin-top:2px}
+  .scene.on .bl-row{animation:fadeUp .4s ease forwards}
+  .scene.on .bl-row:nth-of-type(1){animation-delay:.6s}
+  .scene.on .bl-row:nth-of-type(2){animation-delay:.8s}
+  .scene.on .bl-row:nth-of-type(3){animation-delay:1s}
+  .cloud{display:flex;flex-wrap:wrap;gap:5px;padding-top:2px}
+  .chip{color:var(--success);background:rgba(63,185,80,.10);border-radius:4px;padding:2px 7px;opacity:0}
+  .scene.on .chip{animation:chipIn .4s ease forwards}
+  .scene.on .chip:nth-child(1){animation-delay:.7s}
+  .scene.on .chip:nth-child(2){animation-delay:.8s}
+  .scene.on .chip:nth-child(3){animation-delay:.9s}
+  .scene.on .chip:nth-child(4){animation-delay:1s}
+  .scene.on .chip:nth-child(5){animation-delay:1.1s}
+  .scene.on .chip:nth-child(6){animation-delay:1.2s}
+  .scene.on .chip:nth-child(7){animation-delay:1.3s}
+  @keyframes chipIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}
+
+  /* ============ 场景 8：写作统计 ============ */
+  .stats{display:flex;flex-direction:column;gap:12px;flex:1;min-height:0}
+  .s-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .sc{background:var(--bg-1);border:1px solid var(--border);border-radius:7px;padding:10px 12px}
+  .sc.hero{border-color:var(--accent)}
+  .sc .l{font-size:9.5px;letter-spacing:.6px;text-transform:uppercase;color:var(--fg-3);font-weight:700}
+  .sc .n{font-size:22px;font-weight:700;margin-top:3px;font-variant-numeric:tabular-nums}
+  .sc .n small{font-size:11px;color:var(--fg-3);font-weight:400}
+  .sc .meta{font-size:10px;color:var(--fg-2);margin-top:5px;display:flex;gap:10px}
+  .sc .b{height:5px;background:var(--bg-2);border-radius:3px;margin-top:7px;overflow:hidden}
+  .sc .b i{display:block;height:100%;background:var(--accent);width:0}
+  .scene.on .sc .b i{animation:grow2 3s ease .6s forwards}
+  @keyframes grow2{to{width:68%}}
+  .heat{background:var(--bg-1);border:1px solid var(--border);border-radius:7px;padding:11px 12px}
+  .heat h4{font-size:11px;color:var(--fg-1);margin-bottom:9px}
+  .grid{display:flex;gap:3px}
+  .wk{display:flex;flex-direction:column;gap:3px}
+  .cell{width:11px;height:11px;border-radius:2px;background:var(--bg-2);opacity:0}
+  .cell.l1{background:rgba(88,166,255,.25)}
+  .cell.l2{background:rgba(88,166,255,.5)}
+  .cell.l3{background:rgba(88,166,255,.75)}
+  .cell.l4{background:var(--accent)}
+  .scene.on .cell{animation:cellIn .28s ease forwards}
+  @keyframes cellIn{to{opacity:1}}
+  .trend{display:flex;align-items:flex-end;gap:3px;height:52px}
+  .trend i{flex:1;background:linear-gradient(180deg,var(--accent),rgba(88,166,255,.3));border-radius:2px 2px 0 0;height:0}
+  .scene.on .trend i{animation:tbar .7s ease forwards}
+  @keyframes tbar{to{height:var(--h)}}
+
+  /* ============ 场景 9：导出 ============ */
+  .exp{flex:1;display:flex;gap:20px;align-items:center;justify-content:center}
+  .menu{width:280px;background:var(--bg-1);border:1px solid var(--border);border-radius:8px;padding:5px;box-shadow:0 18px 44px rgba(0,0,0,.55);opacity:0;transform:translateY(-8px)}
+  .scene.on .menu{animation:popIn .32s ease .25s forwards}
+  .mi{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border-radius:5px;font-size:11.5px}
+  .mi svg{width:15px;height:15px;color:var(--accent);margin-top:1px;flex:0 0 15px}
+  .mi .t{color:var(--fg-0);font-weight:500}
+  .mi .d{color:var(--fg-3);font-size:10px;margin-top:2px}
+  .scene.on .mi{animation:mhl 4.4s steps(1) 1s infinite}
+  .scene.on .mi:nth-child(1){animation-delay:1s}
+  .scene.on .mi:nth-child(2){animation-delay:1.5s}
+  .scene.on .mi:nth-child(3){animation-delay:2s}
+  .scene.on .mi:nth-child(4){animation-delay:2.5s}
+  @keyframes mhl{0%,100%{background:transparent}5%,18%{background:var(--bg-3)}}
+  .files{display:flex;flex-direction:column;gap:9px}
+  .file{
+    display:flex;align-items:center;gap:9px;padding:9px 13px;min-width:190px;
+    background:var(--bg-1);border:1px solid var(--border);border-radius:7px;
+    font-size:11.5px;opacity:0;transform:translateX(-12px);
+  }
+  .scene.on .file{animation:fileIn .45s ease forwards}
+  .scene.on .file:nth-child(1){animation-delay:3s}
+  .scene.on .file:nth-child(2){animation-delay:3.2s}
+  .scene.on .file:nth-child(3){animation-delay:3.4s}
+  .scene.on .file:nth-child(4){animation-delay:3.6s}
+  @keyframes fileIn{to{opacity:1;transform:none}}
+  .file .ext{margin-left:auto;font-family:var(--mono);font-size:9.5px;color:var(--fg-3);background:var(--bg-2);border-radius:3px;padding:1px 5px}
+  .file svg{width:14px;height:14px;color:var(--success)}
+
+  /* ============ 场景 10：本地加密 ============ */
+  .vault{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px}
+  .vflow{display:flex;align-items:center;gap:18px}
+  .vfile{background:var(--bg-1);border:1px solid var(--border);border-radius:8px;padding:13px 16px;min-width:190px;font-size:12px}
+  .vfile .fn{font-family:var(--mono);color:var(--fg-0);display:flex;align-items:center;gap:7px}
+  .vfile .fn svg{width:14px;height:14px}
+  .vfile .sz{font-size:10px;color:var(--fg-3);margin-top:5px}
+  .vfile.enc{border-color:var(--accent);box-shadow:0 0 24px rgba(88,166,255,.18)}
+  .vfile.enc .fn svg{color:var(--accent)}
+  .garrow{display:flex;flex-direction:column;align-items:center;gap:5px;color:var(--fg-3);font-size:10px}
+  .garrow svg{width:22px;height:22px;color:var(--accent);animation:slideX 1.4s ease-in-out infinite}
+  @keyframes slideX{0%,100%{transform:translateX(-4px);opacity:.5}50%{transform:translateX(4px);opacity:1}}
+  .cipher{
+    margin-top:2px;font-family:var(--mono);font-size:9.5px;line-height:1.5;
+    color:var(--fg-3);max-width:190px;word-break:break-all;height:44px;overflow:hidden;
+  }
+  .scene.on .cipher .cg{animation:scramble 2.4s steps(1) 1s infinite}
+  @keyframes scramble{0%{color:var(--fg-3)}50%{color:var(--accent)}100%{color:var(--fg-3)}}
+  .pw{display:flex;align-items:center;gap:9px;background:var(--bg-1);border:1px solid var(--border);border-radius:7px;padding:9px 13px;min-width:300px}
+  .pw svg{width:14px;height:14px;color:var(--accent)}
+  .pw .dots{font-family:var(--mono);letter-spacing:4px;color:var(--fg-0);font-size:13px;overflow:hidden;white-space:nowrap;width:0}
+  .scene.on .pw .dots{animation:typeDots 2s steps(8) .8s forwards}
+  @keyframes typeDots{to{width:112px}}
+  .pw .lockmsg{margin-left:auto;font-size:10px;color:var(--success);opacity:0}
+  .scene.on .pw .lockmsg{animation:fadeUp .5s ease 2.9s forwards}
+
+  /* ============ 底部控制条 ============ */
+  .hud{
+    flex:0 0 40px;display:flex;align-items:center;gap:12px;
+    padding:0 14px;background:var(--bg-1);border-top:1px solid var(--border);
+  }
+  .prog{flex:1;height:3px;background:var(--bg-3);border-radius:2px;overflow:hidden}
+  .prog i{display:block;height:100%;width:0;background:var(--accent);border-radius:2px}
+  .prog i.run{animation:progRun var(--dur) linear forwards}
+  @keyframes progRun{from{width:0}to{width:100%}}
+  .hbtn{
+    display:flex;align-items:center;gap:5px;font-size:11px;color:var(--fg-2);
+    background:var(--bg-2);border:1px solid var(--border);border-radius:5px;
+    padding:4px 9px;cursor:pointer;
+  }
+  .hbtn:hover{color:var(--fg-0);background:var(--bg-3)}
+  .hbtn svg{width:11px;height:11px}
+  .hud .idx{font-family:var(--mono);font-size:10.5px;color:var(--fg-3);min-width:44px;text-align:right}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- 标题栏 -->
+  <div class="titlebar">
+    <div class="lights"><i></i><i></i><i></i></div>
+    <div class="mark">MW</div>
+    <div class="brand">MarkWright</div>
+    <div class="tsep"></div>
+    <div class="docname" id="docname">欢迎使用 MarkWright.md</div>
+    <div class="tb-right">
+      <div class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>新建</div>
+      <div class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/></svg>保存</div>
+      <div class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>导出</div>
+    </div>
+  </div>
+
+  <div class="body">
+    <!-- 左导航 -->
+    <nav class="rail">
+      <div class="rail-h">功能演示 · 10</div>
+      <div class="nav-item on" data-go="0"><span class="num">01</span><span class="dot"></span>双栏实时预览</div>
+      <div class="nav-item" data-go="1"><span class="num">02</span><span class="dot"></span>斜杠语法菜单</div>
+      <div class="nav-item" data-go="2"><span class="num">03</span><span class="dot"></span>命令面板</div>
+      <div class="nav-item" data-go="3"><span class="num">04</span><span class="dot"></span>十二套主题</div>
+      <div class="nav-item" data-go="4"><span class="num">05</span><span class="dot"></span>专注模式 · 番茄钟</div>
+      <div class="nav-item" data-go="5"><span class="num">06</span><span class="dot"></span>程序化环境音</div>
+      <div class="nav-item" data-go="6"><span class="num">07</span><span class="dot"></span>双向链接 · 标签</div>
+      <div class="nav-item" data-go="7"><span class="num">08</span><span class="dot"></span>写作统计</div>
+      <div class="nav-item" data-go="8"><span class="num">09</span><span class="dot"></span>四种导出</div>
+      <div class="nav-item" data-go="9"><span class="num">10</span><span class="dot"></span>本地加密</div>
+    </nav>
+
+    <!-- 舞台 -->
+    <div class="stage">
+
+      <!-- 场景 1 -->
+      <section class="scene on" data-i="0">
+        <div class="scene-title">双栏实时预览 <span class="badge">所见即所得</span></div>
+        <div class="scene-sub">左侧写作，右侧即时渲染。输入合并到一百二十毫秒渲染一次，源码未变时直接跳过。</div>
+        <div class="split">
+          <div class="ed">
+            <div class="code-line"><span class="ln">1</span><span><span class="c-key">#</span> 项目周报 · 第 32 周</span></div>
+            <div class="code-line"><span class="ln">2</span><span></span></div>
+            <div class="code-line"><span class="ln">3</span><span>本周把渲染管线做了重构，</span></div>
+            <div class="code-line"><span class="ln">4</span><span>首屏体积下降了<span class="c-str"> 约七成</span>。</span></div>
+            <div class="code-line"><span class="ln">5</span><span></span></div>
+            <div class="code-line"><span class="ln">6</span><span><span class="c-cm">```ts</span></span></div>
+            <div class="code-line"><span class="ln">7</span><span><span class="c-key">const</span> <span class="c-fn">split</span> = () =&gt; import(<span class="c-str">'mermaid'</span>)<span class="caret"></span></span></div>
+            <div class="code-line"><span class="ln">8</span><span><span class="c-cm">```</span></span></div>
+          </div>
+          <div class="pv">
+            <h1>项目周报 · 第 32 周</h1>
+            <p>本周把渲染管线做了重构，首屏体积下降了约七成。</p>
+            <div class="codeblk"><span class="c-key">const</span> <span class="c-fn">split</span> = () =&gt; import(<span class="c-str">'mermaid'</span>)</div>
+            <div class="li"><b>✓</b><span>支持任务列表与表格</span></div>
+            <div class="li"><b>✓</b><span>代码块语法高亮</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 场景 2 -->
+      <section class="scene" data-i="1">
+        <div class="scene-title">斜杠语法菜单 <span class="badge">二十一条语法</span></div>
+        <div class="scene-sub">行首或空白后输入一个斜杠，常用语法随手可选。上下键选择，回车插入。</div>
+        <div class="slashwrap">
+          <div class="slash-ed">
+            <div><span class="c-key">#</span> 我的读书笔记</div>
+            <div></div>
+            <div><span class="caret"></span>/</div>
+            <div class="slash-menu">
+              <div class="sm-item"><span class="tag">H2</span>二级标题<span class="sample">##</span></div>
+              <div class="sm-item"><span class="tag">B</span>粗体<span class="sample">**text**</span></div>
+              <div class="sm-item"><span class="tag">UL</span>无序列表<span class="sample">- </span></div>
+              <div class="sm-item"><span class="tag">TASK</span>任务列表<span class="sample">- [ ] </span></div>
+              <div class="sm-item"><span class="tag">TB</span>表格<span class="sample">| a | b |</span></div>
+            </div>
+            <div class="inserted">## 核心观点</div>
+          </div>
+          <div class="slash-side">
+            <div class="tip"><h4><span class="dot"></span>为什么不是自动补全</h4><p>斜杠菜单只在你明确敲出 <code>/</code> 时出现，不会在正常输入里打断你。斜杠前必须是行首、空白或中文标点，所以路径 <code>a/b</code> 和网址不会误触发。</p></div>
+            <div class="tip"><h4><span class="dot"></span>中英文都能搜</h4><p>输入 <code>标题</code> 或 <code>h2</code> 都能筛到同一条；每条命令右侧直接显示将要插入的语法。</p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 场景 3 -->
+      <section class="scene" data-i="2">
+        <div class="scene-title">命令面板 <span class="badge">三十八条命令</span></div>
+        <div class="scene-sub">一个入口，找回所有功能。按分组列出，输入即筛，上下键导航，回车执行。</div>
+        <div class="palette-wrap">
+          <div class="palette">
+            <div class="pal-row">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 0 0 0-6z"/></svg>
+              <div class="pal-input"><span class="typed">导出</span><span class="pal-caret"></span></div>
+              <span class="pal-esc kbd">ESC</span>
+            </div>
+            <div class="pal-g">导出</div>
+            <div class="pal-i hot"><span class="t">导出为 PDF</span><span class="kbd">打印对话框</span></div>
+            <div class="pal-i"><span class="t">导出为 HTML</span><span class="kbd">独立文件</span></div>
+            <div class="pal-i"><span class="t">导出为 DOCX</span><span class="kbd">Word</span></div>
+            <div class="pal-i"><span class="t">导出为 PNG</span><span class="kbd">图片</span></div>
+            <div class="pal-i"><span class="t">复制富文本</span><span class="kbd">剪贴板</span></div>
+            <div class="pal-i"><span class="t">切换下一个主题</span><span class="kbd">主题</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 场景 4 -->
+      <section class="scene" data-i="3">
+        <div class="scene-title">十二套主题 · 六个维度 <span class="badge">不只是换色</span></div>
+        <div class="scene-sub">每套主题同时定义颜色、字体、背景纹理、装饰、动效与信息密度。字体全部使用系统本地字体，不下载任何外部字体。</div>
+        <div class="themes">
+          <div class="tcard cycle"><div class="nm">深空黑 <em>默认</em></div><div class="sw"><i style="background:#0d1117"></i><i style="background:#161b22"></i><i style="background:#58a6ff"></i><i style="background:#e6edf3"></i></div><div class="ring"></div></div>
+          <div class="tcard"><div class="nm">纯净白 <em>日间</em></div><div class="sw"><i style="background:#fff"></i><i style="background:#f6f8fa"></i><i style="background:#0969da"></i><i style="background:#1f2328"></i></div></div>
+          <div class="tcard"><div class="nm">牛皮纸 <em>长文</em></div><div class="sw"><i style="background:#f4ecd8"></i><i style="background:#ebe1c4"></i><i style="background:#8b5a2b"></i><i style="background:#3a2e1f"></i></div></div>
+          <div class="tcard"><div class="nm">极光紫 <em>夜间</em></div><div class="sw"><i style="background:#1a1133"></i><i style="background:#241847"></i><i style="background:#b794f6"></i><i style="background:#e9defc"></i></div></div>
+          <div class="tcard"><div class="nm">森绿 <em>护眼</em></div><div class="sw"><i style="background:#f1f4ed"></i><i style="background:#e4ebd8"></i><i style="background:#3a7d44"></i><i style="background:#1e3a24"></i></div></div>
+          <div class="tcard"><div class="nm">暖阳 <em>技术</em></div><div class="sw"><i style="background:#fdf6e3"></i><i style="background:#eee8d5"></i><i style="background:#cb4b16"></i><i style="background:#586e75"></i></div></div>
+          <div class="tcard"><div class="nm">GitHub 暗淡</div><div class="sw"><i style="background:#22272e"></i><i style="background:#2d333b"></i><i style="background:#539bf5"></i><i style="background:#adbac7"></i></div></div>
+          <div class="tcard"><div class="nm">黑曜石</div><div class="sw"><i style="background:#1b1b26"></i><i style="background:#232331"></i><i style="background:#a882ff"></i><i style="background:#e6e0ff"></i></div></div>
+          <div class="tcard"><div class="nm">书卷</div><div class="sw"><i style="background:#faf6ec"></i><i style="background:#f3ecda"></i><i style="background:#b03a30"></i><i style="background:#2f2a22"></i></div></div>
+          <div class="tcard"><div class="nm">极地夜</div><div class="sw"><i style="background:#2e3440"></i><i style="background:#3b4252"></i><i style="background:#88c0d0"></i><i style="background:#eceff4"></i></div></div>
+          <div class="tcard"><div class="nm">抹茶</div><div class="sw"><i style="background:#e8f0e4"></i><i style="background:#dbe8d4"></i><i style="background:#2f7d5d"></i><i style="background:#263526"></i></div></div>
+          <div class="tcard"><div class="nm">德拉库拉</div><div class="sw"><i style="background:#282a36"></i><i style="background:#343746"></i><i style="background:#bd93f9"></i><i style="background:#f8f8f2"></i></div></div>
+        </div>
+      </section>
+
+      <!-- 场景 5 -->
+      <section class="scene" data-i="4">
+        <div class="scene-title">专注模式 · 番茄钟 <span class="badge">二十五 / 五 / 十五</span></div>
+        <div class="scene-sub">进入后所有界面隐去，只剩文字与一个进度环。二十五分钟专注，五分钟短休息，长休息十五分钟。</div>
+        <div class="focus">
+          <div class="ring-wrap">
+            <svg viewBox="0 0 140 140">
+              <circle class="ring-bg" cx="70" cy="70" r="54"></circle>
+              <circle class="ring-fg" cx="70" cy="70" r="54"></circle>
+            </svg>
+            <div class="ring-txt">
+              <div class="digits">25:00</div>
+              <div class="phase"><i></i>专注中</div>
+            </div>
+          </div>
+          <div class="focus-stats">
+            <div class="fs"><div class="n">1,284</div><div class="l">当前文档字数</div></div>
+            <div class="fs"><div class="n">1,860<small> / 2,000</small></div><div class="l">今日字数 · 93%</div><div class="b"><i></i></div></div>
+            <div class="fs"><div class="n">3<small> / 4</small></div><div class="l">今日番茄</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 场景 6 -->
+      <section class="scene" data-i="5">
+        <div class="scene-title">程序化环境音 <span class="badge">零音频文件</span></div>
+        <div class="scene-sub">雨声、咖啡馆、键盘、森林四种环境音，全部由音频算法当场合成，不占用任何音频资源，也不需要联网。</div>
+        <div class="wn-wrap">
+          <div class="wave">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+          <div class="wn-panel">
+            <div class="wn-h"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5zM15.5 8.5a5 5 0 0 1 0 7M19 5a9 9 0 0 1 0 14"/></svg>环境音</div>
+            <div class="wn-grid">
+              <div class="wn-b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 16.6A5 5 0 0 0 18 7h-1.3A8 8 0 1 0 4 15.3"/><path d="M16 14v6M8 14v6M12 16v6"/></svg>雨声</div>
+              <div class="wn-b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8h1a4 4 0 1 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z"/></svg>咖啡馆</div>
+              <div class="wn-b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8"/></svg>键盘</div>
+              <div class="wn-b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22v-7M9 15l3-3 3 3M12 8l-2-3M12 8l2-3"/></svg>森林</div>
+            </div>
+            <div class="wn-vol">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M11 5L6 9H2v6h4l5 4V5z"/></svg>
+              <div class="wn-track"><i></i></div>
+              <span>40%</span>
+            </div>
+          </div>
+        </div>
+        <div class="note">风声由粉红噪声经低通滤波生成；鸟鸣由正弦波加颤音随机触发，每三到五秒一次。</div>
+      </section>
+
+      <!-- 场景 7 -->
+      <section class="scene" data-i="6">
+        <div class="scene-title">双向链接 · 反向链接 · 标签云 <span class="badge">个人知识网络</span></div>
+        <div class="scene-sub">工作区扫描采用八路并发，只读 Markdown 文件，单个文件上限两兆。反向链接会带上出现的那一行原文。</div>
+        <div class="links">
+          <div class="doc">
+            <h3>本周复盘</h3>
+            <div>这周的进展主要在 <span class="wl">[[渲染管线重构]]</span> 上，</div>
+            <div>顺手把 <span class="wl">[[导出模块]]</span> 也理了一遍。</div>
+            <div style="margin-top:8px">标记：<span class="tg">#周报</span> <span class="tg">#重构</span> <span class="tg">#性能</span></div>
+          </div>
+          <div>
+            <div class="bl">
+              <h4>反向链接 · 被引用</h4>
+              <div class="bl-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><div>季度总结.md<span class="ctx">第 18 行：详见 [[渲染管线重构]] 的说明</span></div></div>
+              <div class="bl-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><div>技术选型.md<span class="ctx">第 4 行：参考 [[渲染管线重构]] 的结论</span></div></div>
+              <div class="bl-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><div>下周计划.md<span class="ctx">第 9 行：继续推进 [[渲染管线重构]]</span></div></div>
+            </div>
+            <div class="bl">
+              <h4>标签云 · 按频次</h4>
+              <div class="cloud">
+                <span class="chip" style="font-size:10px">#重构 3</span>
+                <span class="chip" style="font-size:16px">#周报 9</span>
+                <span class="chip" style="font-size:11px">#性能 4</span>
+                <span class="chip" style="font-size:14px">#读书 7</span>
+                <span class="chip" style="font-size:12px">#灵感 5</span>
+                <span class="chip" style="font-size:10px">#待办 2</span>
+                <span class="chip" style="font-size:13px">#复盘 6</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 场景 8 -->
+      <section class="scene" data-i="7">
+        <div class="scene-title">写作统计 <span class="badge">本地数据库</span></div>
+        <div class="scene-sub">字数增量在内存累积，一点五秒合并上报一次，把写入次数从每次击键降到每一点五秒一次。数据全部存在本机。</div>
+        <div class="stats">
+          <div class="s-cards">
+            <div class="sc hero"><div class="l">今日</div><div class="n">1,860<small> / 2,000</small></div><div class="meta"><span>番茄 3</span><span>时长 1h 15m</span></div><div class="b"><i></i></div></div>
+            <div class="sc"><div class="l">本周</div><div class="n">12,430</div><div class="meta"><span>番茄 18</span><span>时长 9h 40m</span></div></div>
+            <div class="sc"><div class="l">总计</div><div class="n">286,510</div><div class="meta"><span>番茄 412</span><span>时长 214h</span></div></div>
+          </div>
+          <div class="heat">
+            <h4>近 90 天写作热力图</h4>
+            <div class="grid" id="heatgrid"></div>
+          </div>
+          <div class="heat">
+            <h4>近 30 天字数</h4>
+            <div class="trend" id="trend"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 场景 9 -->
+      <section class="scene" data-i="8">
+        <div class="scene-title">四种导出 · 一键带走 <span class="badge">标准格式</span></div>
+        <div class="scene-sub">导出格式均为通用文件，不依赖本软件即可打开。内容本身始终是标准 Markdown 纯文本，不存在格式锁定。</div>
+        <div class="exp">
+          <div class="menu">
+            <div class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg><div><div class="t">导出为 PDF</div><div class="d">通过系统打印对话框保存</div></div></div>
+            <div class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg><div><div class="t">导出为 HTML</div><div class="d">独立文件，双击可看</div></div></div>
+            <div class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><div><div class="t">导出为 DOCX</div><div class="d">支持标题、列表、引用、代码</div></div></div>
+            <div class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><div><div class="t">导出为 PNG</div><div class="d">整篇渲染为一张图片</div></div></div>
+          </div>
+          <div class="files">
+            <div class="file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>周报.pdf<span class="ext">PDF</span></div>
+            <div class="file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>周报.html<span class="ext">HTML</span></div>
+            <div class="file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>周报.docx<span class="ext">DOCX</span></div>
+            <div class="file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>周报.png<span class="ext">PNG</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 场景 10 -->
+      <section class="scene" data-i="9">
+        <div class="scene-title">本地加密 <span class="badge">AES-256-GCM</span></div>
+        <div class="scene-sub">加密在原生层完成，密钥由主密码派生。主密码不写入任何可读存储，用完即从内存清除。</div>
+        <div class="vault">
+          <div class="vflow">
+            <div class="vfile">
+              <div class="fn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>笔记.md</div>
+              <div class="sz">纯文本 · 12.4 KB</div>
+            </div>
+            <div class="garrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              加密
+            </div>
+            <div class="vfile enc">
+              <div class="fn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>笔记.md.vault</div>
+              <div class="cipher"><span class="cg">MWV1</span> 7f3a9c1e4b8d2056af13c9e7b45d0a8f6e2c4b9d1a7f3e5c8b0d2a4f6e8c1b3d5a7f9e0c2b4d6a8f1e3c5b7d9a0f2e4c6b8d1a3f5e7c9b0d2a4f6e8c1b3d5a7f9e0c2b4d6a8f</div>
+            </div>
+          </div>
+          <div class="pw">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span class="dots">••••••••</span>
+            <span class="lockmsg">已加密 · 密码未落盘</span>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- 底部控制条 -->
+  <div class="hud">
+    <button class="hbtn" id="prev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>上一个</button>
+    <button class="hbtn" id="play"><svg id="playsvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg><span id="playtxt">暂停</span></button>
+    <button class="hbtn" id="next">下一个<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+    <div class="prog"><i id="progbar"></i></div>
+    <div class="idx" id="idx">01 / 10</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- 生成热力图（13 周 × 7 天 = 91 格） ---------- */
+  var grid = document.getElementById('heatgrid');
+  if (grid) {
+    var levels = [0,0,1,0,2,0,0,1,3,0,1,0,2,4,0,1,0,2,1,0,3,0,1,2,0,0,4,1,0,2,0,1,0,3,0,2,1,0,0,2,1,0,4,0,1,0,2,0,1,3,0,0,2,1,0,1,0,4,2,0,1,0,3,0,2,1,0,0,1,2,0,4,1,0,2,0,1,3,0,0,2,1,0,1,0,2,0,4,1,0,0,2,1];
+    for (var w = 0; w < 13; w++) {
+      var wk = document.createElement('div');
+      wk.className = 'wk';
+      for (var d = 0; d < 7; d++) {
+        var c = document.createElement('div');
+        var lv = levels[w * 7 + d] || 0;
+        c.className = 'cell' + (lv ? ' l' + lv : '');
+        c.style.animationDelay = (0.35 + (w * 7 + d) * 0.012).toFixed(2) + 's';
+        wk.appendChild(c);
+      }
+      grid.appendChild(wk);
+    }
+  }
+
+  /* ---------- 生成 30 天趋势 ---------- */
+  var trend = document.getElementById('trend');
+  if (trend) {
+    var vals = [22,40,15,58,33,12,47,66,28,19,52,38,71,44,26,60,35,18,49,63,30,55,41,24,68,37,21,57,46,32];
+    for (var i = 0; i < vals.length; i++) {
+      var b = document.createElement('i');
+      b.style.setProperty('--h', Math.round(vals[i] / 71 * 100) + '%');
+      b.style.animationDelay = (0.4 + i * 0.03).toFixed(2) + 's';
+      trend.appendChild(b);
+    }
+  }
+
+  /* ---------- 场景切换与自动播放 ---------- */
+  var DUR = 7000;                       // 每个场景停留时长
+  var scenes = Array.prototype.slice.call(document.querySelectorAll('.scene'));
+  var navs = Array.prototype.slice.call(document.querySelectorAll('.nav-item'));
+  var docname = document.getElementById('docname');
+  var progbar = document.getElementById('progbar');
+  var idxEl = document.getElementById('idx');
+  var playBtn = document.getElementById('play');
+  var playTxt = document.getElementById('playtxt');
+  var playsvg = document.getElementById('playsvg');
+
+  var NAMES = [
+    '欢迎使用 MarkWright.md','读书笔记.md','命令面板 · 搜索.md','主题设置.md',
+    '专注模式.md','环境音.md','本周复盘.md','写作统计.md','周报.md','笔记.md.vault'
+  ];
+
+  var cur = 0, timer = null, running = true;
+
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+
+  function render(i){
+    cur = (i + scenes.length) % scenes.length;
+    scenes.forEach(function(s, k){
+      s.classList.toggle('on', k === cur);
+    });
+    navs.forEach(function(n, k){
+      n.classList.toggle('on', k === cur);
+    });
+    docname.textContent = NAMES[cur] || '未命名.md';
+    idxEl.textContent = pad(cur + 1) + ' / ' + pad(scenes.length);
+    /* 重启进度条动画 */
+    progbar.classList.remove('run');
+    void progbar.offsetWidth;
+    progbar.style.setProperty('--dur', (DUR / 1000) + 's');
+    if (running) progbar.classList.add('run');
+  }
+
+  function next(){ render(cur + 1); }
+  function prev(){ render(cur - 1); }
+
+  function startTimer(){
+    stopTimer();
+    if (!running) return;
+    timer = setInterval(next, DUR);
+  }
+  function stopTimer(){ if (timer) { clearInterval(timer); timer = null; } }
+
+  function setRunning(v){
+    running = v;
+    if (v){
+      playTxt.textContent = '暂停';
+      playsvg.innerHTML = '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>';
+      render(cur);
+      startTimer();
+    } else {
+      playTxt.textContent = '播放';
+      playsvg.innerHTML = '<path d="M6 3l14 9-14 9V3z"/>';
+      progbar.classList.remove('run');
+      stopTimer();
+    }
+  }
+
+  navs.forEach(function(n){
+    n.addEventListener('click', function(){
+      render(parseInt(n.getAttribute('data-go'), 10));
+      startTimer();
+    });
+  });
+  document.getElementById('next').addEventListener('click', function(){ next(); startTimer(); });
+  document.getElementById('prev').addEventListener('click', function(){ prev(); startTimer(); });
+  playBtn.addEventListener('click', function(){ setRunning(!running); });
+
+  /* 键盘：左右切换，空格暂停 */
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowRight'){ next(); startTimer(); }
+    else if (e.key === 'ArrowLeft'){ prev(); startTimer(); }
+    else if (e.key === ' '){ e.preventDefault(); setRunning(!running); }
+  });
+
+  /* 鼠标移入暂停自动播放，移出恢复 */
+  var stage = document.querySelector('.stage');
+  stage.addEventListener('mouseenter', stopTimer);
+  stage.addEventListener('mouseleave', function(){ if (running) startTimer(); });
+
+  render(0);
+  startTimer();
+})();
+</script>
+</body>
+</html>

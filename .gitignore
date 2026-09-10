@@ -1,0 +1,56 @@
+# ===== Dependencies =====
+node_modules
+.pnp
+.pnp.js
+
+# ===== Build outputs =====
+dist
+dist-ssr
+.svelte-kit
+/src-tauri/target
+/src-tauri/gen/schemas
+release
+out/
+*.exe
+*.msi
+*.AppImage
+*.dmg
+*.deb
+*.rpm
+
+# ===== Logs & cache =====
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.cache
+.temp
+
+# ===== Environment & secrets =====
+.env
+.env.*
+!.env.example
+
+# ===== Editor / OS =====
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+Thumbs.db
+
+# ===== Local / internal (not for public repo) =====
+.workbuddy-ai
+task-plan
+.spec-workflow
+.build.log
+bun.lock
+*.zip
+发布版/

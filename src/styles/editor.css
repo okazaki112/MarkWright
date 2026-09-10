@@ -1,0 +1,65 @@
+/**
+ * CodeMirror 6 主题覆盖：与设计令牌对齐
+ */
+.cm-editor {
+  height: 100%;
+  background: var(--bg-0);
+  color: var(--fg-0);
+  font-family: var(--font-mono);
+  font-size: var(--fz-md);
+  line-height: 1.7;
+}
+
+.cm-editor.cm-focused {
+  outline: none;
+}
+
+.cm-scroller {
+  font-family: var(--font-mono);
+  padding-right: 8px;
+}
+
+.cm-gutters {
+  background: var(--cm-gutter-bg);
+  color: var(--fg-2);
+  border-right: 1px solid var(--border-0);
+  padding-right: 4px;
+}
+
+.cm-activeLineGutter,
+.cm-activeLine {
+  background: var(--cm-active-line);
+}
+
+.cm-activeLine {
+  border-radius: 0;
+}
+
+.cm-cursor,
+.cm-dropCursor {
+  border-left: 2px solid var(--cm-cursor);
+}
+
+.cm-selectionBackground,
+.cm-content ::selection {
+  background: var(--cm-selection) !important;
+}
+
+.cm-matchingBracket {
+  background: var(--cm-matching-bracket);
+  outline: 1px solid var(--success);
+  outline-offset: -1px;
+}
+
+.cm-content {
+  caret-color: var(--cm-cursor);
+  padding: 16px 0;
+}
+
+/* markdown 标题加粗 */
+.cm-header-1 { font-size: 1.7em; font-weight: 700; }
+.cm-header-2 { font-size: 1.45em; font-weight: 700; }
+.cm-header-3 { font-size: 1.25em; font-weight: 600; }
+.cm-header-4 { font-size: 1.1em; font-weight: 600; }
+.cm-header-5,
+.cm-header-6 { font-weight: 600; }

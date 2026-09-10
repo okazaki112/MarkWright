@@ -1,0 +1,693 @@
+/**
+ * 正文内容渲染主题（按家族差异化）
+ * 由 theme store 应用 <html data-content="...">，六个家族：
+ *
+ *  modern   - 现代渐变：渐变下划线标题 / 胶囊行内码 / mac 点代码块 / 光晕表格
+ *  github   - GitHub 经典：底部边框标题 / 无背景引用 / 斑马表格
+ *  book     - 书卷印刷：居中双线标题 / 「」引号 / 大引号引用 / 花饰分割线
+ *  obsidian - 黑曜石 callout：# 标记标题 / 引用卡片 / 发光代码卡片
+ *  nord     - 极简清冷：色块标题 / 无竖线表格 / 细线引用
+ *  neon     - 霓虹彩幻：彩虹分级标题 / 霓虹渐变分割线 / 发光代码边框
+ *
+ * 选择器均带 :root[data-content] 前缀，优先级高于 preview.css 的基础规则。
+ */
+
+/* ==================== 全局补充（所有主题生效） ==================== */
+
+/* 高亮标记 ==text== / <mark> */
+.preview-content mark {
+  background: var(--accent-soft, rgba(88, 166, 255, 0.16));
+  color: var(--md-heading, inherit);
+  padding: 0.05em 0.3em;
+  border-radius: 3px;
+}
+
+/* 行内代码在 pre 内的兜底（防止家族样式误伤） */
+.preview-content pre code {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+/* ==================== modern：现代渐变 ==================== */
+/* 深空黑 / 极光紫 */
+
+:root[data-content='modern'] .preview-content {
+  --_code-radius: var(--radius-md);
+}
+
+/* 标题：渐变下划线 / 方块标记 */
+:root[data-content='modern'] .preview-content h1 {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+:root[data-content='modern'] .preview-content h1::after {
+  content: '';
+  display: block;
+  height: 2px;
+  margin-top: 0.4em;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent 85%);
+}
+:root[data-content='modern'] .preview-content h2 {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+:root[data-content='modern'] .preview-content h2::before {
+  content: '';
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: 0.5em;
+  background: var(--accent);
+  border-radius: 2px;
+  transform: rotate(45deg);
+  vertical-align: 0.06em;
+  box-shadow: 0 0 8px var(--glow-color, transparent);
+}
+:root[data-content='modern'] .preview-content h3::before {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 2px;
+  margin-right: 0.55em;
+  background: var(--accent);
+  border-radius: 2px;
+  vertical-align: 0.28em;
+  opacity: 0.75;
+}
+
+/* 行内代码：胶囊 */
+:root[data-content='modern'] .preview-content code {
+  padding: 0.12em 0.5em;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+/* 代码块：无边框卡片 + mac 窗口点 */
+:root[data-content='modern'] .preview-content pre {
+  position: relative;
+  border: none;
+  border-radius: var(--radius-md);
+  padding-top: 32px;
+  box-shadow: var(--shadow-md);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-3) 55%, transparent), transparent 34px),
+    var(--md-code-bg);
+}
+:root[data-content='modern'] .preview-content pre::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 14px;
+  right: 14px;
+  height: 12px;
+  background:
+    radial-gradient(circle at 6px 6px, #ff5f56 3px, transparent 3.6px),
+    radial-gradient(circle at 22px 6px, #ffbd2e 3px, transparent 3.6px),
+    radial-gradient(circle at 38px 6px, #27c93f 3px, transparent 3.6px);
+  opacity: 0.75;
+}
+
+/* 引用：渐变左条 + 柔和底色，不用斜体 */
+:root[data-content='modern'] .preview-content blockquote {
+  font-style: normal;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  background: linear-gradient(90deg, var(--accent-soft), transparent 75%);
+}
+
+/* 表格：圆角 + 光晕表头 */
+:root[data-content='modern'] .preview-content table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--md-table-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+:root[data-content='modern'] .preview-content th,
+:root[data-content='modern'] .preview-content td {
+  border: none;
+  border-bottom: 1px solid var(--md-table-border);
+}
+:root[data-content='modern'] .preview-content th:not(:last-child),
+:root[data-content='modern'] .preview-content td:not(:last-child) {
+  border-right: 1px solid var(--md-table-border);
+}
+:root[data-content='modern'] .preview-content tr:last-child td {
+  border-bottom: none;
+}
+:root[data-content='modern'] .preview-content th {
+  background: var(--accent-soft);
+}
+
+/* 分割线：渐变隐没 */
+:root[data-content='modern'] .preview-content hr {
+  height: 1px;
+  border: none;
+  background: linear-gradient(90deg, transparent, var(--md-hr) 20%, var(--md-hr) 80%, transparent);
+}
+
+/* 图片：圆角 + 投影 */
+:root[data-content='modern'] .preview-content img {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+/* ==================== github：GitHub 经典 ==================== */
+/* 纯净白 / GitHub 暗淡 */
+
+:root[data-content='github'] .preview-content blockquote {
+  background: transparent;
+  font-style: normal;
+  border-radius: 0;
+  padding: 0 1em;
+  color: var(--fg-2);
+}
+
+:root[data-content='github'] .preview-content code {
+  padding: 0.2em 0.4em;
+  font-size: 85%;
+  border-radius: 6px;
+}
+
+:root[data-content='github'] .preview-content pre {
+  padding: 16px;
+  line-height: 1.45;
+}
+
+:root[data-content='github'] .preview-content a:hover {
+  text-decoration: underline;
+  border-bottom: none;
+}
+
+:root[data-content='github'] .preview-content h2 {
+  letter-spacing: -0.01em;
+}
+
+:root[data-content='github'] .preview-content hr {
+  height: 0.25em;
+  border: none;
+  border-radius: 2px;
+  background: var(--border-0);
+  opacity: 0.55;
+}
+
+:root[data-content='github'] .preview-content img {
+  background: var(--bg-1);
+  padding: 4px;
+  border: 1px solid var(--border-0);
+}
+
+/* ==================== book：书卷印刷 ==================== */
+/* 牛皮纸 / 书卷 */
+
+:root[data-content='book'] .preview-content {
+  letter-spacing: 0.02em;
+}
+
+/* 一级标题：居中 + 双细线 + 疏排 */
+:root[data-content='book'] .preview-content h1 {
+  text-align: center;
+  border-bottom: 3px double var(--border-1);
+  padding-bottom: 0.45em;
+  letter-spacing: 0.12em;
+  margin-left: 0.12em; /* 抵消 letter-spacing 造成的偏移 */
+}
+
+/* 二级标题：「」引号包裹 */
+:root[data-content='book'] .preview-content h2 {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+:root[data-content='book'] .preview-content h2::before {
+  content: '「';
+  color: var(--accent);
+  opacity: 0.8;
+  margin-right: 0.15em;
+}
+:root[data-content='book'] .preview-content h2::after {
+  content: '」';
+  color: var(--accent);
+  opacity: 0.8;
+  margin-left: 0.15em;
+}
+
+/* 三级标题：❖ 花标 */
+:root[data-content='book'] .preview-content h3::before {
+  content: '❖';
+  color: var(--accent);
+  font-size: 0.72em;
+  margin-right: 0.55em;
+  vertical-align: 0.18em;
+  opacity: 0.8;
+}
+
+/* 引用：大引号悬挂 */
+:root[data-content='book'] .preview-content blockquote {
+  position: relative;
+  border-left: none;
+  background: transparent;
+  border-radius: 0;
+  font-style: normal;
+  padding: 0.4em 1em 0.4em 2.1em;
+}
+:root[data-content='book'] .preview-content blockquote::before {
+  content: '「';
+  position: absolute;
+  left: 0.05em;
+  top: -0.05em;
+  font-size: 1.9em;
+  line-height: 1;
+  color: var(--accent);
+  opacity: 0.55;
+  font-family: var(--font-serif);
+}
+
+/* 分割线：❖ 花饰 */
+:root[data-content='book'] .preview-content hr {
+  border: none;
+  height: auto;
+  background: none;
+  margin: 1.8em 0;
+  text-align: center;
+}
+:root[data-content='book'] .preview-content hr::after {
+  content: '✦ ✦ ✦';
+  color: var(--accent);
+  opacity: 0.5;
+  font-size: 0.8em;
+  letter-spacing: 0.9em;
+  margin-left: 0.9em; /* 抵消末字符 letter-spacing */
+}
+
+/* 表格：细全格线 + 双线表头底 */
+:root[data-content='book'] .preview-content th {
+  border-bottom: 2px solid var(--border-1);
+  letter-spacing: 0.05em;
+}
+
+/* 行内代码：细边框方章 */
+:root[data-content='book'] .preview-content code {
+  border: 1px solid var(--border-0);
+  border-radius: 4px;
+  padding: 0.1em 0.4em;
+  font-size: 0.86em;
+}
+
+/* 图片：纸片相框 */
+:root[data-content='book'] .preview-content img {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-0);
+  padding: 4px;
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-paper);
+}
+
+/* ==================== obsidian：黑曜石 callout ==================== */
+
+/* 标题：柔和下边 + 竖条标记 */
+:root[data-content='obsidian'] .preview-content h1 {
+  border-bottom: none;
+  padding-bottom: 0;
+  font-weight: 700;
+}
+:root[data-content='obsidian'] .preview-content h1::after {
+  content: '';
+  display: block;
+  height: 2px;
+  margin-top: 0.35em;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent-soft), transparent);
+}
+:root[data-content='obsidian'] .preview-content h2 {
+  border-bottom: 1px solid var(--accent-soft);
+  padding-bottom: 0.25em;
+}
+:root[data-content='obsidian'] .preview-content h2::before {
+  content: '';
+  display: inline-block;
+  width: 0.32em;
+  height: 0.8em;
+  margin-right: 0.45em;
+  background: var(--accent);
+  border-radius: 2px;
+  vertical-align: -0.06em;
+  opacity: 0.7;
+}
+:root[data-content='obsidian'] .preview-content h3::before {
+  content: '';
+  display: inline-block;
+  width: 0.9em;
+  height: 2px;
+  margin-right: 0.5em;
+  background: var(--accent);
+  border-radius: 2px;
+  vertical-align: 0.3em;
+  opacity: 0.45;
+}
+
+/* 引用：callout 卡片 */
+:root[data-content='obsidian'] .preview-content blockquote {
+  font-style: normal;
+  border-left: 4px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  padding: 0.6em 1em;
+  box-shadow: var(--shadow-sm);
+}
+
+/* 代码块：发光卡片 */
+:root[data-content='obsidian'] .preview-content pre {
+  border: none;
+  border-radius: var(--radius-lg);
+  box-shadow:
+    inset 0 0 0 1px var(--accent-soft),
+    var(--shadow-md);
+}
+
+/* 行内代码：胶囊 */
+:root[data-content='obsidian'] .preview-content code {
+  padding: 0.12em 0.5em;
+  border-radius: 999px;
+  border: 1px solid var(--accent-soft);
+}
+
+/* 表格：圆角 + 渐变表头 */
+:root[data-content='obsidian'] .preview-content table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--md-table-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+:root[data-content='obsidian'] .preview-content th,
+:root[data-content='obsidian'] .preview-content td {
+  border: none;
+  border-bottom: 1px solid var(--md-table-border);
+}
+:root[data-content='obsidian'] .preview-content th:not(:last-child),
+:root[data-content='obsidian'] .preview-content td:not(:last-child) {
+  border-right: 1px solid var(--md-table-border);
+}
+:root[data-content='obsidian'] .preview-content tr:last-child td {
+  border-bottom: none;
+}
+:root[data-content='obsidian'] .preview-content th {
+  background: linear-gradient(90deg, var(--accent-soft), transparent);
+}
+
+/* 分割线：渐变隐没 */
+:root[data-content='obsidian'] .preview-content hr {
+  height: 1px;
+  border: none;
+  background: linear-gradient(90deg, transparent, var(--accent-soft) 25%, var(--accent-soft) 75%, transparent);
+}
+
+/* 图片：圆角 + 投影 */
+:root[data-content='obsidian'] .preview-content img {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+/* ==================== nord：极简清冷 ==================== */
+/* 极地夜 / 抹茶 / 森绿 / 暖阳 */
+
+/* 一级标题：短色条 */
+:root[data-content='nord'] .preview-content h1 {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+:root[data-content='nord'] .preview-content h1::after {
+  content: '';
+  display: block;
+  width: 2.6em;
+  height: 3px;
+  margin-top: 0.35em;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* 二级标题：竖色块 */
+:root[data-content='nord'] .preview-content h2 {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+:root[data-content='nord'] .preview-content h2::before {
+  content: '';
+  display: inline-block;
+  width: 0.4em;
+  height: 0.85em;
+  margin-right: 0.5em;
+  background: var(--accent);
+  border-radius: 2px;
+  vertical-align: -0.06em;
+  opacity: 0.85;
+}
+
+/* 三级标题：细横杠 */
+:root[data-content='nord'] .preview-content h3::before {
+  content: '';
+  display: inline-block;
+  width: 0.9em;
+  height: 2px;
+  margin-right: 0.5em;
+  background: var(--accent);
+  opacity: 0.5;
+  vertical-align: 0.3em;
+}
+
+/* 引用：细线 + 静色，无底色 */
+:root[data-content='nord'] .preview-content blockquote {
+  background: transparent;
+  border-left: 3px solid var(--accent);
+  border-radius: 0;
+  font-style: normal;
+  color: var(--fg-1);
+  opacity: 0.92;
+}
+
+/* 行内代码：扁平 */
+:root[data-content='nord'] .preview-content code {
+  padding: 0.15em 0.42em;
+  border-radius: 4px;
+}
+
+/* 代码块：单侧留白 + 无边框 */
+:root[data-content='nord'] .preview-content pre {
+  border: none;
+  border-left: 3px solid var(--border-0);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+/* 表格：只留横线，去掉竖线 */
+:root[data-content='nord'] .preview-content table {
+  border: none;
+  border-top: 2px solid var(--border-0);
+}
+:root[data-content='nord'] .preview-content th,
+:root[data-content='nord'] .preview-content td {
+  border: none;
+  border-bottom: 1px solid var(--md-table-border);
+}
+:root[data-content='nord'] .preview-content tr:last-child td {
+  border-bottom: none;
+}
+:root[data-content='nord'] .preview-content th {
+  color: var(--fg-2);
+  font-weight: 600;
+}
+
+/* 分割线：细线居中收窄 */
+:root[data-content='nord'] .preview-content hr {
+  border: none;
+  height: 1px;
+  margin: 1.8em auto;
+  width: 60%;
+  background: var(--md-hr);
+}
+
+/* 图片：大圆角 */
+:root[data-content='nord'] .preview-content img {
+  border-radius: var(--radius-lg);
+}
+
+/* ==================== neon：霓虹彩幻（德拉库拉） ==================== */
+
+/* 彩虹分级标题 */
+:root[data-content='neon'] .preview-content h1 {
+  color: #ff79c6;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+:root[data-content='neon'] .preview-content h1::after {
+  content: '';
+  display: block;
+  height: 3px;
+  margin-top: 0.35em;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #ff79c6, #bd93f9, #8be9fd);
+}
+:root[data-content='neon'] .preview-content h2 {
+  color: #bd93f9;
+  border-bottom: 1px solid rgba(189, 147, 249, 0.3);
+  padding-bottom: 0.25em;
+}
+:root[data-content='neon'] .preview-content h3 { color: #8be9fd; }
+:root[data-content='neon'] .preview-content h4 { color: #50fa7b; }
+:root[data-content='neon'] .preview-content h5 { color: #ffb86c; }
+:root[data-content='neon'] .preview-content h6 { color: #f1fa8c; }
+
+:root[data-content='neon'] .preview-content strong { color: #ffb86c; }
+:root[data-content='neon'] .preview-content em { color: #ff79c6; }
+
+:root[data-content='neon'] .preview-content a {
+  color: #8be9fd;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+  border-bottom: none;
+}
+:root[data-content='neon'] .preview-content a:hover {
+  text-decoration-style: solid;
+}
+
+/* 行内代码：粉边绿字 */
+:root[data-content='neon'] .preview-content code {
+  padding: 0.12em 0.45em;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 121, 198, 0.35);
+  background: color-mix(in srgb, #ff79c6 10%, var(--md-code-bg));
+  color: #50fa7b;
+}
+
+/* 代码块：霓虹描边 + 外发光 */
+:root[data-content='neon'] .preview-content pre {
+  border: 1px solid rgba(189, 147, 249, 0.4);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    0 0 24px rgba(189, 147, 249, 0.12),
+    inset 0 0 32px rgba(189, 147, 249, 0.05);
+}
+
+/* 引用：粉条 + 紫底 */
+:root[data-content='neon'] .preview-content blockquote {
+  font-style: normal;
+  border-left: 4px solid #ff79c6;
+  background: rgba(255, 121, 198, 0.08);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+/* 列表标记换色 */
+:root[data-content='neon'] .preview-content li::marker {
+  color: #ff79c6;
+}
+
+/* 表格：紫底表头 + 斑马纹 */
+:root[data-content='neon'] .preview-content table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid rgba(189, 147, 249, 0.4);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+:root[data-content='neon'] .preview-content th,
+:root[data-content='neon'] .preview-content td {
+  border: none;
+  border-bottom: 1px solid var(--md-table-border);
+}
+:root[data-content='neon'] .preview-content th:not(:last-child),
+:root[data-content='neon'] .preview-content td:not(:last-child) {
+  border-right: 1px solid var(--md-table-border);
+}
+:root[data-content='neon'] .preview-content tr:last-child td {
+  border-bottom: none;
+}
+:root[data-content='neon'] .preview-content th {
+  background: rgba(189, 147, 249, 0.15);
+}
+
+/* 分割线：三色霓虹渐变 */
+:root[data-content='neon'] .preview-content hr {
+  height: 2px;
+  border: none;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, #ff79c6, #bd93f9, #8be9fd, transparent);
+}
+
+/* 图片：暗色投影 */
+:root[data-content='neon'] .preview-content img {
+  border-radius: 8px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+}
+
+/* ==================== 代码高亮（hljs）按家族调色 ==================== */
+
+/* github 浅色（纯净白）：GitHub Light 语法色 */
+:root[data-content='github'][data-theme='light'] .preview-content .hljs-keyword,
+:root[data-content='github'][data-theme='light'] .preview-content .hljs-selector-tag,
+:root[data-content='github'][data-theme='light'] .preview-content .hljs-literal { color: #cf222e; }
+:root[data-content='github'][data-theme='light'] .preview-content .hljs-string,
+:root[data-content='github'][data-theme='light'] .preview-content .hljs-attr { color: #0a3069; }
+:root[data-content='github'][data-theme='light'] .preview-content .hljs-number { color: #0550ae; }
+:root[data-content='github'][data-theme='light'] .preview-content .hljs-title,
+:root[data-content='github'][data-theme='light'] .preview-content .hljs-name { color: #8250df; }
+:root[data-content='github'][data-theme='light'] .preview-content .hljs-type,
+:root[data-content='github'][data-theme='light'] .preview-content .hljs-tag { color: #116329; }
+
+/* book 家族浅色：暖棕墨色 */
+:root[data-content='book'][data-theme='light'] .preview-content .hljs-keyword,
+:root[data-content='book'][data-theme='light'] .preview-content .hljs-selector-tag,
+:root[data-content='book'][data-theme='light'] .preview-content .hljs-literal { color: #a04530; }
+:root[data-content='book'][data-theme='light'] .preview-content .hljs-string,
+:root[data-content='book'][data-theme='light'] .preview-content .hljs-attr { color: #6a5028; }
+:root[data-content='book'][data-theme='light'] .preview-content .hljs-number { color: #8b5a2b; }
+:root[data-content='book'][data-theme='light'] .preview-content .hljs-title,
+:root[data-content='book'][data-theme='light'] .preview-content .hljs-name,
+:root[data-content='book'][data-theme='light'] .preview-content .hljs-built_in { color: #5a4a30; }
+:root[data-content='book'][data-theme='light'] .preview-content .hljs-comment,
+:root[data-content='book'][data-theme='light'] .preview-content .hljs-quote { color: #a08968; }
+
+/* nord 家族深色：Nord 语法色 */
+:root[data-content='nord'][data-theme='dark'] .preview-content .hljs-keyword { color: #81a1c1; }
+:root[data-content='nord'][data-theme='dark'] .preview-content .hljs-string { color: #a3be8c; }
+:root[data-content='nord'][data-theme='dark'] .preview-content .hljs-number { color: #b48ead; }
+:root[data-content='nord'][data-theme='dark'] .preview-content .hljs-title { color: #88c0d0; }
+:root[data-content='nord'][data-theme='dark'] .preview-content .hljs-comment { color: #616e88; }
+:root[data-content='nord'][data-theme='dark'] .preview-content .hljs-type { color: #8fbcbb; }
+:root[data-content='nord'][data-theme='dark'] .preview-content .hljs-built_in { color: #88c0d0; }
+
+/* nord 家族浅色（抹茶）：草木色 */
+:root[data-content='nord'][data-theme='light'] .preview-content .hljs-keyword { color: #2a6e8f; }
+:root[data-content='nord'][data-theme='light'] .preview-content .hljs-string { color: #4f7a3d; }
+:root[data-content='nord'][data-theme='light'] .preview-content .hljs-number { color: #8f5a7a; }
+:root[data-content='nord'][data-theme='light'] .preview-content .hljs-title { color: #2f7d5d; }
+:root[data-content='nord'][data-theme='light'] .preview-content .hljs-comment { color: #8aa284; }
+
+/* obsidian：紫罗兰语法色 */
+:root[data-content='obsidian'] .preview-content .hljs-keyword,
+:root[data-content='obsidian'] .preview-content .hljs-selector-tag,
+:root[data-content='obsidian'] .preview-content .hljs-literal { color: #c792ea; }
+:root[data-content='obsidian'] .preview-content .hljs-string,
+:root[data-content='obsidian'] .preview-content .hljs-attr { color: #c3e88d; }
+:root[data-content='obsidian'] .preview-content .hljs-number { color: #f78c6c; }
+:root[data-content='obsidian'] .preview-content .hljs-title,
+:root[data-content='obsidian'] .preview-content .hljs-name { color: #82aaff; }
+:root[data-content='obsidian'] .preview-content .hljs-comment,
+:root[data-content='obsidian'] .preview-content .hljs-quote { color: #6b6390; }
+
+/* neon：Dracula 语法色 */
+:root[data-content='neon'] .preview-content .hljs-keyword,
+:root[data-content='neon'] .preview-content .hljs-selector-tag { color: #ff79c6; }
+:root[data-content='neon'] .preview-content .hljs-string { color: #f1fa8c; }
+:root[data-content='neon'] .preview-content .hljs-number { color: #bd93f9; }
+:root[data-content='neon'] .preview-content .hljs-title,
+:root[data-content='neon'] .preview-content .hljs-name { color: #50fa7b; }
+:root[data-content='neon'] .preview-content .hljs-comment,
+:root[data-content='neon'] .preview-content .hljs-quote { color: #6272a4; }
+:root[data-content='neon'] .preview-content .hljs-type,
+:root[data-content='neon'] .preview-content .hljs-tag { color: #8be9fd; }
+:root[data-content='neon'] .preview-content .hljs-built_in { color: #8be9fd; }
+:root[data-content='neon'] .preview-content .hljs-variable { color: #50fa7b; }

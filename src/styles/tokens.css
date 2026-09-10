@@ -1,0 +1,292 @@
+/**
+ * 设计令牌 v2 - 主题感知
+ * 颜色变量随主题切换 字体变量随主题切换 装饰密度动效随主题切换
+ */
+:root,
+:root[data-theme='dark'] {
+  /* 表面层级 */
+  --bg-0: #0d1117;
+  --bg-1: #161b22;
+  --bg-2: #1c2128;
+  --bg-3: #22272e;
+  --bg-elevated: #2d333b;
+  --bg-overlay: rgba(13, 17, 23, 0.85);
+
+  /* 文字 */
+  --fg-0: #e6edf3;
+  --fg-1: #b1bac4;
+  --fg-2: #8b949e;
+  --fg-3: #6e7681;
+
+  /* 边框 */
+  --border-0: #30363d;
+  --border-1: #444c56;
+  --border-focus: #58a6ff;
+
+  /* 语义色 */
+  --accent: #58a6ff;
+  --accent-hover: #79b8ff;
+  --accent-pressed: #388bfd;
+  --success: #3fb950;
+  --warning: #d29922;
+  --danger: #f85149;
+  --info: #79c0ff;
+
+  /* Markdown 语义色 */
+  --md-heading: #e6edf3;
+  --md-link: #58a6ff;
+  --md-code-bg: #161b22;
+  --md-code-inline: #ff7b72;
+  --md-quote-border: #444c56;
+  --md-quote-fg: #b1bac4;
+  --md-table-border: #30363d;
+  --md-hr: #30363d;
+  --md-list-bullet: #8b949e;
+
+  /* 字体（默认） */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,
+    sans-serif;
+  --font-serif: var(--font-sans);
+  --font-display: var(--font-sans);
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Menlo, Consolas,
+    'Liberation Mono', monospace;
+  --font-ui: var(--font-sans);
+
+  /* 字号 / 行高 / 间距（标准密度） */
+  --fz-xs: 11px;
+  --fz-sm: 12px;
+  --fz-md: 13px;
+  --fz-base: 14px;
+  --fz-lg: 16px;
+  --fz-xl: 18px;
+  --fz-2xl: 22px;
+  --fz-3xl: 28px;
+  --fz-preview: 15px;        /* 预览正文字号 */
+  --line-h-preview: 1.75;    /* 预览行高 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  /* 圆角 / 阴影（默认 flat） */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+  --shadow-paper: none;     /* 纸张模式才有 */
+
+  /* 过渡（默认 smooth） */
+  --t-fast: 100ms ease;
+  --t-base: 160ms ease;
+  --t-slow: 240ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* 尺寸 */
+  --title-h: 40px;
+  --toolbar-h: 44px;
+  --status-h: 26px;
+  --splitter-w: 4px;
+
+  /* CodeMirror */
+  --cm-gutter-bg: #0d1117;
+  --cm-active-line: #161b22;
+  --cm-selection: #264f78;
+  --cm-cursor: #e6edf3;
+  --cm-matching-bracket: #3fb95055;
+
+  /* 全局体验令牌（滚动条 / 选区 / 光晕），主题可覆盖 */
+  --scrollbar-thumb: #30363d;
+  --scrollbar-thumb-hover: #444c56;
+  --selection-bg: rgba(88, 166, 255, 0.3);
+  --accent-soft: rgba(88, 166, 255, 0.16);
+  --glow-color: rgba(88, 166, 255, 0.45);
+}
+
+/* 紧凑密度 */
+:root[data-density='compact'] {
+  --fz-base: 13px;
+  --fz-preview: 14px;
+  --line-h-preview: 1.65;
+  --space-3: 10px;
+  --space-4: 14px;
+  --space-5: 20px;
+}
+
+/* 宽松密度 */
+:root[data-density='loose'] {
+  --fz-base: 15px;
+  --fz-preview: 17px;
+  --line-h-preview: 1.85;
+  --space-3: 14px;
+  --space-4: 20px;
+  --space-5: 30px;
+  --space-6: 48px;
+}
+
+/* 动效模式：sharp 即时 */
+:root[data-motion='sharp'] {
+  --t-fast: 50ms linear;
+  --t-base: 80ms linear;
+  --t-slow: 100ms linear;
+}
+
+/* 动效模式：glow（增加光晕过渡） */
+:root[data-motion='glow'] {
+  --t-fast: 180ms cubic-bezier(0.4, 0, 0.2, 1);
+  --t-base: 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  --t-slow: 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 动效模式：float（按钮悬浮 / 弹性过渡） */
+:root[data-motion='float'] {
+  --t-fast: 160ms cubic-bezier(0.4, 0, 0.2, 1);
+  --t-base: 240ms cubic-bezier(0.4, 0, 0.2, 1);
+  --t-slow: 380ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 装饰模式：paper - 纸张感 */
+:root[data-decoration='paper'] {
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --shadow-paper:
+    0 1px 1px rgba(0, 0, 0, 0.05),
+    0 2px 4px rgba(0, 0, 0, 0.08),
+    0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+/* 装饰模式：card - 卡片化 */
+:root[data-decoration='card'] {
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-md: 0 8px 24px rgba(183, 148, 246, 0.12);
+  --shadow-lg: 0 20px 60px rgba(183, 148, 246, 0.2);
+}
+
+/* 装饰模式：bar - 标题左侧条 */
+:root[data-decoration='bar'] {
+  --radius-md: 6px;
+  --radius-lg: 8px;
+}
+
+/* 表面纹理：grid */
+:root[data-surface='grid'] {
+  --surface-bg: var(--bg-0);
+  --surface-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24'><path d='M24 0H0V24' fill='none' stroke='rgba(128,128,128,0.06)' stroke-width='0.5'/></svg>");
+}
+
+/* 表面纹理：lines */
+:root[data-surface='lines'] {
+  --surface-bg: var(--bg-0);
+  --surface-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><path d='M0 0H32' fill='none' stroke='rgba(0,0,0,0.05)' stroke-width='0.5'/></svg>");
+}
+
+/* 表面纹理：stars（仅深色主题生效）*/
+:root[data-surface='stars'] {
+  --surface-bg: var(--bg-0);
+  --surface-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><g fill='rgba(255,255,255,0.08)'><circle cx='20' cy='30' r='0.7'/><circle cx='60' cy='80' r='0.5'/><circle cx='100' cy='20' r='1'/><circle cx='140' cy='110' r='0.6'/><circle cx='180' cy='50' r='0.8'/><circle cx='40' cy='150' r='0.5'/><circle cx='120' cy='170' r='0.7'/><circle cx='170' cy='160' r='0.4'/></g></svg>");
+}
+
+/* 表面纹理：paper - 暖色纸张 + 噪点 */
+:root[data-surface='paper'] {
+  --surface-bg: var(--bg-0);
+  --surface-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/><feColorMatrix values='0 0 0 0 0.4 0 0 0 0 0.3 0 0 0 0 0.2 0 0 0 0.08 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* 表面纹理：aurora - 动态极光（多层渐变 + 缓慢漂移动画） */
+:root[data-surface='aurora'] {
+  --surface-bg: var(--bg-0);
+  --surface-image:
+    radial-gradient(42% 42% at 26% 36%, rgba(124, 58, 237, 0.22), transparent 70%),
+    radial-gradient(38% 38% at 74% 60%, rgba(56, 189, 248, 0.16), transparent 70%),
+    radial-gradient(46% 46% at 60% 26%, rgba(236, 72, 153, 0.12), transparent 70%);
+}
+:root[data-surface='aurora'] body {
+  background-repeat: no-repeat;
+  background-size: 200% 200%;
+  animation: aurora-drift 28s ease-in-out infinite alternate;
+}
+@keyframes aurora-drift {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 60% 40%; }
+  100% { background-position: 100% 100%; }
+}
+
+/* ============================================================
+   全局体验增强：选区 / 滚动条 / 焦点环 / 动效钩子
+   （所有主题通用，颜色由各主题令牌决定）
+   ============================================================ */
+
+/* 文本选区 */
+::selection {
+  background: var(--selection-bg, rgba(88, 166, 255, 0.3));
+}
+
+/* 统一滚动条 */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb, #30363d);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover, #444c56);
+}
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* 键盘焦点环 */
+:focus-visible {
+  outline: 2px solid var(--border-focus, var(--accent));
+  outline-offset: 1px;
+}
+
+/* glow 动效：交互元素聚焦光晕 */
+:root[data-motion='glow'] :is(button, input, textarea, select):focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--bg-0),
+    0 0 14px var(--glow-color, rgba(88, 166, 255, 0.45));
+}
+
+/* glow 动效：强调元素呼吸微光 */
+:root[data-motion='glow'] ::-webkit-scrollbar-thumb:hover {
+  box-shadow: 0 0 8px var(--glow-color, rgba(88, 166, 255, 0.45));
+}
+
+/* float 动效：按钮悬浮 / 按压回弹 */
+:root[data-motion='float'] button {
+  transition:
+    transform var(--t-base),
+    background-color var(--t-base),
+    color var(--t-base),
+    border-color var(--t-base);
+}
+:root[data-motion='float'] button:hover {
+  transform: translateY(-1px);
+}
+:root[data-motion='float'] button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* 尊重系统"减少动态效果"设置 */
+@media (prefers-reduced-motion: reduce) {
+  :root[data-surface='aurora'] body {
+    animation: none;
+  }
+  :root[data-motion='float'] button,
+  :root[data-motion='float'] button:hover,
+  :root[data-motion='float'] button:active {
+    transform: none;
+    transition: none;
+  }
+}
