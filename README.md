@@ -1,4 +1,4 @@
-<img width="1921" height="1633" alt="MarkWright架构" src="https://github.com/user-attachments/assets/45dd6002-c3e8-4e04-a3f5-32943888ec2a" /><img width="2736" height="2908" alt="image" src="https://github.com/user-attachments/assets/7125372e-8070-44c2-97bf-ce89e1113c82" />
+
 # MarkWright
 
 > 专业本地 Markdown 编辑器 · Tauri 2 + Vue 3 · 完全离线 · 零云同步
@@ -18,7 +18,7 @@
 - 🔒 本地加密 Vault（AES-256-GCM），数据不出本机
 - 📦 轻量（便携版约 8.7 MB），重型依赖按需加载
 ![正在上传 MarkWright架构.png…]()
-
+<img width="1921" height="1633" alt="MarkWright架构" src="https://github.com/user-attachments/assets/45dd6002-c3e8-4e04-a3f5-32943888ec2a" />
 <img width="1920" height="1025" alt="1" src=“https://github.com/user-attachments/assets/0c425f4b-a7d8-44c2-9664-9e468a226843” />
 <img width="1920" height="1025" alt="2" src="https://github.com/user-attachments/assets/8ffb00ef-d233-471d-b60a-ff9a27c5bf0b" />
 <img width="1920" height="1025" alt="3" src="https://github.com/user-attachments/assets/fa4493bd-4c54-4828-ac72-0d68f5924ea5" />
