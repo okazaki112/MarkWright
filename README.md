@@ -17,7 +17,7 @@
 -⚡ 基于 CodeMirror 6 的编辑内核，实时预览
 - 🔒 本地加密 Vault（AES-256-GCM），数据不出本机
 - 📦 轻量（便携版约 8.7 MB），重型依赖按需加载
-![正在上传 MarkWright架构.png…]()
+
 <img width="1921" height="1633" alt="MarkWright架构" src="https://github.com/user-attachments/assets/45dd6002-c3e8-4e04-a3f5-32943888ec2a" />
 <img width="1920" height="1025" alt="1" src=“https://github.com/user-attachments/assets/0c425f4b-a7d8-44c2-9664-9e468a226843” />
 <img width="1920" height="1025" alt="2" src="https://github.com/user-attachments/assets/8ffb00ef-d233-471d-b60a-ff9a27c5bf0b" />
