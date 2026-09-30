@@ -1,22 +1,25 @@
-
+<img width="1921" height="1633" alt="MarkWright架构" src="https://github.com/user-attachments/assets/45dd6002-c3e8-4e04-a3f5-32943888ec2a" /><img width="2736" height="2908" alt="image" src="https://github.com/user-attachments/assets/7125372e-8070-44c2-97bf-ce89e1113c82" />
 # MarkWright
 
 > 专业本地 Markdown 编辑器 · Tauri 2 + Vue 3 · 完全离线 · 零云同步
 
 [![Version](https://img.shields.io/badge/version-0.4.8-blue)](https://github.com/)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)](https://github.com/)
+[![许可证](https://img.shields.io/badge/license-MIT-green)](许可证)
+[![平台](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)](https://github.com/)
 [![Tauri](https://img.shields.io/badge/Tauri-2-328bf0)](https://tauri.app)
 [![Vue](https://img.shields.io/badge/Vue-3-42b883)](https://vuejs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178c6)](https://www.typescriptlang.org)
 
+
 **MarkWright** 是一款为认真写作而生的桌面 Markdown 编辑器。它将专业代码编辑器的编辑内核、现代化笔记软件的知识网络与写作辅助工具，整合进一个**完全本地、零联网**的应用中。
 
 - 🖥️ 桌面原生应用（Windows / macOS / Linux）
-- ⚡ CodeMirror 6 编辑内核，实时预览
+-⚡ 基于 CodeMirror 6 的编辑内核，实时预览
 - 🔒 本地加密 Vault（AES-256-GCM），数据不出本机
 - 📦 轻量（便携版约 8.7 MB），重型依赖按需加载
-<img width="1920" height="1025" alt="1" src="https://github.com/user-attachments/assets/0c425f4b-a7d8-44c2-9664-9e468a226843" />
+![正在上传 MarkWright架构.png…]()
+
+<img width="1920" height="1025" alt="1" src=“https://github.com/user-attachments/assets/0c425f4b-a7d8-44c2-9664-9e468a226843” />
 <img width="1920" height="1025" alt="2" src="https://github.com/user-attachments/assets/8ffb00ef-d233-471d-b60a-ff9a27c5bf0b" />
 <img width="1920" height="1025" alt="3" src="https://github.com/user-attachments/assets/fa4493bd-4c54-4828-ac72-0d68f5924ea5" />
 <img width="1920" height="1025" alt="4" src="https://github.com/user-attachments/assets/3d61f1dc-ae87-46af-a9ba-98202f08b886" />
